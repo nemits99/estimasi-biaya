@@ -5,132 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estimasi Biaya Barang</title>
     <link rel="manifest" href="./manifest.json">
-
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            font-size: 16px;
-            color: #0080ff;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .total {
-            font-weight: bold;
-            background-color: #e8e8e8;
-        }
-        th:nth-child(1), td:nth-child(1) {
-            width: 50px;
-            text-align: center;
-        }
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .footer {
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            padding: 8px;
-            border-top: 1px solid #ddd;
-            background-color: #e8e8e8;
-            color: #ec0000;
-            font-weight: bold;
-            font-size:16px;
-        }
+h1 {
+    font-size: 24px;
+    color: #0080ff;
+    text-align: center;
+    margin-top: 20px;
+}
 
-        .footer-label {
-            flex: 4; 
-            text-align: left;
-        }
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    position: relative;
+    margin: 20px;
+}
 
-        .footer-value {
-            flex: 1; 
-            text-align: right;
-        }
-        button {
-    background-color: #4CAF50; 
-    color: white; 
-    border: none; 
-    padding: 6px 15px; 
-    text-align: center; 
-    text-decoration: none; 
-    display: inline-block; 
-    font-size: 12px;
-    margin: 5px 10px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid gray;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f1f1f1;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+td input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    box-sizing: border-box;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border-top: 1px solid gray;
+    margin-top: 20px;
+}
+
+.footer-label {
+    font-weight: bold;
+}
+
+.footer-value {
+    font-weight: bold;
+    color: #0080ff;
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #0080ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 button:hover {
-    background-color: #45a049; 
+    background-color: #005bb5;
 }
 
-button:active {
-    background-color: #3e8e41; 
+@media (max-width: 768px) {
+    .table-container {
+        margin: 10px;
+    }
+
+    th, td {
+        padding: 4px;
+    }
+
+    button {
+        padding: 8px 16px;
+        margin: 5px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .footer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-label, .footer-value {
+        margin: 5px 0;
+    }
 }
 
-button:focus {
-    outline: none;
-}
+@media (max-width: 480px) {
+    th, td {
+        padding: 2px;
+    }
 
-button.export {
-    background-color: #008CBA; 
-}
+    button {
+        padding: 6px 12px;
+        margin: 3px;
+    }
 
-button.export:hover {
-    background-color: #007b8f; 
+    h1 {
+        font-size: 18px;
+    }
 }
-
     </style>
 </head>
 <body>
-   
+    <h1>Estimasi Biaya</h1>
     <button onclick="addRow()">Tambah Baris</button>
     <button onclick="exportToPDF()">Export to PDF</button>
-    <h1>Estimasi Biaya</h1>
+    <button onclick="saveData()">Save Data</button>
+    <div class="table-container">
     <table id="biayaTable">
         <thead>
             <tr>
                 <th>No</th>
                 <th>Nama Barang</th>
+                <th>Harga</th>
                 <th>Qty</th>
-                <th>Satuan</th>
-                <th>Harga Satuan (Rp)</th>
-                <th>Jumlah (Rp)</th>
+                <th>Satuan</th>               
+                <th>Jumlah</th>               
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>1</td>
-                <td><input type="text" placeholder="Nama Barang"></td>
-                <td><input type="number" class="qty" value="" min="0" onchange="calculateTotal()"></td>
-                <td><input type="text" placeholder="Satuan"></td>
-                <td><input type="number" class="harga" value="" min="0" onchange="calculateTotal()"></td>
+                <td><input type="text" class="nama-barang" placeholder="Nama Barang"></td>
+                <td><input type="number" class="harga" value="" oninput="calculateTotal()"></td>
+                <td><input type="number" class="qty" value="" min="0" oninput="calculateTotal()"></td>
+                <td><input type="text" class="satuan" placeholder="Satuan"></td>  
                 <td class="jumlah">0</td>
+                <td><button onclick="deleteRow(this)">Hapus</button></td>
             </tr>
         </tbody>
     </table>
-    
+    </div>
     <div class="footer">
-        <div class="footer-label">Total Keseluruhan : Rp</div>
+        <div class="footer-label">Grand Total :</div>
         <div id="grandTotal" class="footer-value">0</div>
     </div>
     
@@ -144,15 +175,16 @@ button.export:hover {
             const newRow = document.createElement("tr");
             newRow.innerHTML = ` 
                 <td>${rowCount}</td>
-                <td><input type="text" placeholder="Nama Barang"></td>
+                <td><input type="text" class="nama-barang" placeholder="Nama Barang"></td>
+                <td><input type="number" class="harga" value="" onchange="calculateTotal()"></td>
                 <td><input type="number" class="qty" value="" min="0" onchange="calculateTotal()"></td>
-                <td><input type="text" placeholder="Satuan"></td>
-                <td><input type="number" class="harga" value="" min="0" onchange="calculateTotal()"></td>
+                <td><input type="text" class="satuan" placeholder="Satuan"></td>               
                 <td class="jumlah">0</td>
+                <td><button onclick="deleteRow(this)">Hapus</button></td>
             `;
             tableBody.appendChild(newRow);
         }
-
+         
         function calculateTotal() {
             const rows = document.querySelectorAll("#biayaTable tbody tr");
             let grandTotal = 0;
@@ -160,13 +192,13 @@ button.export:hover {
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector(".qty").value) || 0;
                 const harga = parseFloat(row.querySelector(".harga").value) || 0;
-                const jumlah = qty * harga;
-
+                const jumlah = harga * qty;
+                
                 row.querySelector(".jumlah").textContent = jumlah.toLocaleString();
-                grandTotal += jumlah;
+                grandTotal +=  jumlah;
             });
 
-            document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
+            document.getElementById("grandTotal").textContent = 'Rp '+ grandTotal.toLocaleString();
         }
 
         async function exportToPDF() {
@@ -177,12 +209,12 @@ button.export:hover {
 
             doc.setFontSize(14);  
             doc.setTextColor(30, 144, 255); 
-            doc.text(" *Estimasi Biaya Pembuatan Grounding System Gudang Anup", 10, 10);
+            doc.text(" *Estimasi harga material", 10, 10);
 
             const startY = 15;  
             doc.autoTable({
                 head: [
-                    ['No', 'Nama Barang', 'Qty', 'Satuan', 'Harga Satuan (Rp)', 'Jumlah (Rp)']
+                    ['No', 'Nama Barang', 'harga', 'Qty', 'Satuan', 'Jumlah']
                 ], 
                 body: getTableData(), 
                 startY: startY, 
@@ -197,8 +229,8 @@ button.export:hover {
 
             const yPosition = doc.lastAutoTable.finalY + 10;
             doc.setFontSize(14);  
-            doc.setTextColor(236, 0, 0); 
-            doc.text(`Total Keseluruhan: Rp ${grandTotal}`, 10, yPosition);
+            doc.setTextColor(0, 0, 0); 
+            doc.text(`Grand Total: Rp ${grandTotal}`, 10, yPosition);
 
             doc.save("Estimasi_Biaya_Barang.pdf");
         }
@@ -218,6 +250,60 @@ button.export:hover {
             return rows;
         }
 
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            updateRowNumbers();
+            calculateTotal();
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#biayaTable tbody tr');
+            rows.forEach((row, index) => {
+                row.cells[0].innerText = index + 1;
+            });
+        }
+
+        function saveData() {
+            const rows = document.querySelectorAll('#biayaTable tbody tr');
+            const data = [];
+            rows.forEach(row => {
+                const rowData = {
+                    nama: row.querySelector('input.nama-barang').value,
+                    harga: row.querySelector('input.harga').value,
+                    qty: row.querySelector('input.qty').value,
+                    satuan: row.querySelector('input.satuan').value,
+                    jumlah: row.querySelector('.jumlah').innerText
+                };
+                data.push(rowData);
+            });
+            const grandTotal = document.getElementById('grandTotal').textContent;
+            localStorage.setItem('biayaData', JSON.stringify({ data, grandTotal }));
+        }
+
+        function loadData() {
+            const storedData = JSON.parse(localStorage.getItem('biayaData'));
+            if (storedData) {
+                const tbody = document.querySelector('#biayaTable tbody');
+                tbody.innerHTML = '';
+                storedData.data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td><input type="text" class="nama-barang" value="${item.nama}" placeholder="Nama Barang"></td>
+                        <td><input type="number" class="harga" value="${item.harga}" onchange="calculateTotal()"></td>
+                        <td><input type="number" class="qty" value="${item.qty}" min="0" onchange="calculateTotal()"></td>
+                        <td><input type="text" class="satuan" value="${item.satuan}" placeholder="Satuan"></td>
+                        <td class="jumlah">${item.jumlah}</td>
+                        <td><button onclick="deleteRow(this)">Hapus</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                document.getElementById('grandTotal').textContent = storedData.grandTotal;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
     </script>
        <script>
         if ("serviceWorker" in navigator) {
